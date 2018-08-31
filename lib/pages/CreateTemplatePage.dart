@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:test4liu/dbHelper.dart';
+import 'package:test4liu/entity/Template.dart';
 
 class CreateTemplatePage extends StatefulWidget {
   @override
@@ -8,7 +9,7 @@ class CreateTemplatePage extends StatefulWidget {
 
 class CreateTemplatePageState extends State<CreateTemplatePage> {
   TextEditingController _controller = new TextEditingController();
-  String templateStr;
+  String templateStr = "";
 
   CreateTemplatePageState() {
     _controller.addListener(() {});
@@ -33,7 +34,7 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
             elevation: 3.0,
             color: Colors.white,
             child: Container(
-              height: 400.0,
+              height: 300.0,
               padding: EdgeInsets.all(8.0),
               child: EditableText(
                 controller: _controller,
@@ -42,7 +43,7 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
                 cursorColor: Colors.red,
                 maxLines: 10,
                 onChanged: (text) {
-                  templateStr = text;
+                  templateStr = text.trim();
                 },
               ),
             ),
@@ -52,6 +53,12 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
             child: FlatButton(
               onPressed: () {
                 print(templateStr);
+                DatabaseHelper
+                    .internal()
+                    .saveTemplate(Template(templateStr))
+                    .then((row) {
+                  print("行数" + row.toString());
+                });
               },
               child: Text(
                 "保存",
