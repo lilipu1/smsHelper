@@ -4,9 +4,9 @@ import 'pages/MsgListPage.dart';
 import 'pages/GroupsPage.dart';
 import 'pages/TemplatePage.dart';
 import 'pages/MinePage.dart';
+import 'pages/FieldPage.dart';
 
 void main() {
-
   runApp(new MyTestClient());
 }
 
@@ -22,7 +22,7 @@ class MyTestClientState extends State<MyTestClient> {
 
   var tabImages;
   var _body;
-  var appBarTitles = ['信息', '分组', '模板', '我的'];
+  var appBarTitles = ['信息', '分组', '模板', '字段', '我的'];
 
   Image getTabImage(path) {
     return new Image.asset(path, width: 20.0, height: 20.0);
@@ -44,22 +44,26 @@ class MyTestClientState extends State<MyTestClient> {
           getTabImage('images/ic_nav_discover_actived.png')
         ],
         [
+          getTabImage('images/ic_nav_discover_normal.png'),
+          getTabImage('images/ic_nav_discover_actived.png')
+        ],
+        [
           getTabImage('images/ic_nav_my_normal.png'),
           getTabImage('images/ic_nav_my_pressed.png')
         ]
       ];
     }
 
-     _body = new IndexedStack(
+    _body = new IndexedStack(
       children: <Widget>[
         new MsgListPage(),
         new GroupsPage(),
         new TemplatePage(),
+        new FieldPage(),
         new MinePage()
       ],
       index: _tabIndex,
     );
-
   }
 
   TextStyle getTabTextStyle(int curIndex) {
@@ -100,6 +104,8 @@ class MyTestClientState extends State<MyTestClient> {
                 icon: getTabIcon(2), title: getTabTitle(2)),
             new BottomNavigationBarItem(
                 icon: getTabIcon(3), title: getTabTitle(3)),
+            new BottomNavigationBarItem(
+                icon: getTabIcon(4), title: getTabTitle(4)),
           ],
           currentIndex: _tabIndex,
           onTap: (index) {

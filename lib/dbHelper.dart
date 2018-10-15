@@ -4,9 +4,11 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'entity/Template.dart';
+import 'entity/Field.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
+
   factory DatabaseHelper() => _instance;
 
   static Database _db;
@@ -31,6 +33,7 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute(
         "CREATE TABLE template(id INTEGER PRIMARY KEY, template TEXT)");
+    db.execute("CREATE TABLE field(id INTEGER PRIMARY KEY, field TEXT)");
     print("Table is created");
   }
 
@@ -41,13 +44,21 @@ class DatabaseHelper {
     return res;
   }
 
-
-
-
-  Future<List<Map<String,dynamic>>> getTemplates() async {
+  Future<List<Map<String, dynamic>>> getTemplates() async {
     var dbClient = await db;
     var res = await dbClient.rawQuery('SELECT * FROM template');
-    print(res);
+    return res;
+  }
+
+  Future<int> saveField(Field field) async {
+    var dbClient = await db;
+    int res = await dbClient.insert("field", field.toMap());
+    return res;
+  }
+
+  Future<List<Map<String, dynamic>>> getFields() async {
+    var dbClient = await db;
+    var res = await dbClient.rawQuery('SELECT * FROM field');
     return res;
   }
 }

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'CreateTemplatePage.dart';
+import 'package:test4liu/entity/Field.dart';
+import 'package:test4liu/constants/Constants.dart';
+import 'package:test4liu/events/SaveFieldEvent.dart';
 import 'package:test4liu/dbHelper.dart';
 import 'dart:async';
-import 'package:test4liu/entity/Template.dart';
-import 'package:test4liu/constants/Constants.dart';
-import 'package:test4liu/events/SaveTemplateEvent.dart';
 
-class TemplatePage extends StatefulWidget {
+class FieldPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return new TemplatePageState();
+    return FieldPageState();
   }
 }
 
-class TemplatePageState extends State<TemplatePage>
-    with WidgetsBindingObserver {
-  var listData = List<Template>();
+class FieldPageState extends State<FieldPage> with WidgetsBindingObserver {
+  var listData = List<Field>();
   var curPage = 1;
   var listTotalSize = 0;
   var dbSize = 0;
@@ -54,7 +53,7 @@ class TemplatePageState extends State<TemplatePage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     getTemplateList(false);
-    Constants.eventBus.on(SaveTemplteEvent).listen((event) {
+    Constants.eventBus.on(SaveFieldEvent).listen((event) {
       curPage = 1;
       getTemplateList(false);
     });
@@ -95,7 +94,7 @@ class TemplatePageState extends State<TemplatePage>
         heroTag: this,
         onPressed: () {
           Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-            return CreateTemplatePage(title: Constants.createTemplate);
+            return CreateTemplatePage(title: Constants.createField);
           }));
         },
         child: new Icon(Icons.add),
@@ -107,12 +106,13 @@ class TemplatePageState extends State<TemplatePage>
     if (loadMore) {
       setState(() {});
     } else {
-      DatabaseHelper.internal().getTemplates().then((values) {
+      DatabaseHelper.internal().getFields().then((values) {
+        print(values);
         setState(() {
           listData.clear();
           dbSize = 0;
           for (var value in values) {
-            listData.add(Template(value["template"]));
+            listData.add(Field(value["field"]));
             dbSize++;
           }
         });
@@ -127,15 +127,7 @@ class TemplatePageState extends State<TemplatePage>
       );
     } else {
       i = i ~/ 2;
-      String text = listData[i].template;
-      return MaterialButton(
-        textTheme: ButtonTextTheme.accent,
-        padding: EdgeInsets.symmetric(vertical: 9.0),
-        onPressed:(){
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
-        },
-        child: Text(text, style: TextStyle(height: 1.0,),textAlign: TextAlign.left),
-      );
+      return new Text(listData[i].field);
     }
   }
 }
