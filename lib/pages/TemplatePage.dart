@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sky_engine/ui/ui.dart';
 import 'CreateTemplatePage.dart';
 import 'package:test4liu/dbHelper.dart';
 import 'dart:async';
 import 'package:test4liu/entity/Template.dart';
 import 'package:test4liu/constants/Constants.dart';
 import 'package:test4liu/events/SaveTemplateEvent.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TemplatePage extends StatefulWidget {
   @override
@@ -36,17 +38,17 @@ class TemplatePageState extends State<TemplatePage>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(state) {
     super.didChangeAppLifecycleState(state);
     print("state:$state");
-    switch (state) {
+    /*switch (state) {
       case AppLifecycleState.resumed:
         curPage = 1;
         getTemplateList(false);
         break;
       default:
         break;
-    }
+    }*/
   }
 
   @override
@@ -54,7 +56,7 @@ class TemplatePageState extends State<TemplatePage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     getTemplateList(false);
-    Constants.eventBus.on(SaveTemplteEvent).listen((event) {
+    Constants.eventBus.on<SaveTemplateEvent>().listen((event) {
       curPage = 1;
       getTemplateList(false);
     });
@@ -131,11 +133,22 @@ class TemplatePageState extends State<TemplatePage>
       return MaterialButton(
         textTheme: ButtonTextTheme.accent,
         padding: EdgeInsets.symmetric(vertical: 9.0),
-        onPressed:(){
-          Scaffold.of(context).showSnackBar(SnackBar(content: Text(text)));
+        onPressed: () {
+          _sendMsg();
         },
-        child: Text(text, style: TextStyle(height: 1.0,),textAlign: TextAlign.left),
+        child: Text(
+          text,
+        ),
       );
     }
+  }
+}
+
+void _sendMsg() async {
+  const url = "sms:15173209115;15616665287";
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    print("could not launch $url");
   }
 }

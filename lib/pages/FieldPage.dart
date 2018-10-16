@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sky_engine/ui/ui.dart';
 import 'CreateTemplatePage.dart';
 import 'package:test4liu/entity/Field.dart';
 import 'package:test4liu/constants/Constants.dart';
@@ -35,17 +36,17 @@ class FieldPageState extends State<FieldPage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(state) {
     super.didChangeAppLifecycleState(state);
     print("state:$state");
-    switch (state) {
-      case AppLifecycleState.resumed:
+    /*switch (state) {
+      case AppLifecycleState.inactive:
         curPage = 1;
         getTemplateList(false);
         break;
       default:
         break;
-    }
+    }*/
   }
 
   @override
@@ -53,7 +54,7 @@ class FieldPageState extends State<FieldPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     getTemplateList(false);
-    Constants.eventBus.on(SaveFieldEvent).listen((event) {
+    Constants.eventBus.on<SaveFieldEvent>().listen((event) {
       curPage = 1;
       getTemplateList(false);
     });

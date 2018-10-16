@@ -6,7 +6,6 @@ import 'package:test4liu/constants/Constants.dart';
 import 'package:test4liu/events/SaveTemplateEvent.dart';
 import 'package:test4liu/events/SaveFieldEvent.dart';
 import 'package:test4liu/widgets/FieldInputFormatter.dart';
-import 'package:zefyr/zefyr.dart';
 
 class CreateTemplatePage extends StatefulWidget {
   final String title;
@@ -18,16 +17,13 @@ class CreateTemplatePage extends StatefulWidget {
 }
 
 class CreateTemplatePageState extends State<CreateTemplatePage> {
-  final document = NotusDocument();
-  ZefyrController _controller;
 
   //String templateStr = "";
   final String title;
+  final focusNode = FocusNode();
+  final controller = TextEditingController();
 
-  CreateTemplatePageState(this.title) {
-    _controller = ZefyrController(document);
-    _controller.addListener(() {});
-  }
+  CreateTemplatePageState(this.title) {}
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,7 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (String value) {
-              _controller.document.toDelta().insert(value, {"bold": true});
+              controller.text = controller.text + "[$value]";
             },
             itemBuilder: (context) => buildItem(context),
           )
@@ -58,37 +54,31 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
             child: Container(
               height: 300.0,
               padding: EdgeInsets.all(8.0),
-              child: ZefyrEditor(
-                //decoration: InputDecoration(border: InputBorder.none),
-                controller: _controller,
-                focusNode: FocusNode(),
-                //style: TextStyle(color: Colors.black),
-                //maxLines: 10,
-                //inputFormatters: [FieldInputFormatter()],
-                /*onChanged: (text) {
-                  templateStr = text.trim();
-                },*/
+              child: TextField(
+                focusNode: focusNode,
+                controller: controller,
+                decoration: null,
+                style: TextStyle(fontSize: 18.0,color: Color.fromARGB(255, 0, 0, 0)),
               ),
             ),
           ),
           Card(
             elevation: 5.0,
+            color: Colors.blue,
             child: FlatButton(
               onPressed: () {
                 switch (title) {
                   case Constants.createTemplate:
-                    DatabaseHelper
-                        .internal()
-                        .saveTemplate(Template(_controller.document.toDelta().toString()))
+                    DatabaseHelper.internal()
+                        .saveTemplate(Template(controller.text))
                         .then((row) {
-                      Constants.eventBus.fire(SaveTemplteEvent());
+                      Constants.eventBus.fire(SaveTemplateEvent());
                       Navigator.pop(context, null);
                     });
                     break;
                   case Constants.createField:
-                    DatabaseHelper
-                        .internal()
-                        .saveField(Field(_controller.document.toDelta().toString()))
+                    DatabaseHelper.internal()
+                        .saveField(Field(controller.text))
                         .then((row) {
                       Constants.eventBus.fire(SaveFieldEvent());
                       Navigator.pop(context, null);
@@ -100,8 +90,6 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
                 "保存",
                 style: TextStyle(fontSize: 16.0, color: Colors.white),
               ),
-              color: Colors.blue,
-              shape: RoundedRectangleBorder(),
             ),
           ),
         ],

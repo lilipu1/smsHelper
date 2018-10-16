@@ -1,1 +1,2 @@
-class SaveTemplteEvent{}
+class SaveTemplateEvent{
+}

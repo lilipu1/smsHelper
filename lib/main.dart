@@ -17,8 +17,8 @@ class MyTestClient extends StatefulWidget {
 
 class MyTestClientState extends State<MyTestClient> {
   int _tabIndex = 0;
-  final tabTextStyleNormal = new TextStyle(color: const Color(0xff969696));
-  final tabTextStyleSelected = new TextStyle(color: const Color(0xff969696));
+  final tabTextStyleNormal = new TextStyle(color: Color(0xff969696));
+  final tabTextStyleSelected = new TextStyle(color: Color(0xff969696));
 
   var tabImages;
   var _body;
