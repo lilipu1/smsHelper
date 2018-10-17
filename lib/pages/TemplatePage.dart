@@ -22,6 +22,7 @@ class TemplatePageState extends State<TemplatePage>
   var listTotalSize = 0;
   var dbSize = 0;
   ScrollController _controller = new ScrollController();
+  var clickActions = ["发送", "编辑", "删除"];
 
   TemplatePageState() {
     _controller.addListener(() {
@@ -41,7 +42,7 @@ class TemplatePageState extends State<TemplatePage>
   void didChangeAppLifecycleState(state) {
     super.didChangeAppLifecycleState(state);
     print("state:$state");
-    /*switch (state) {
+    /* switch (state) {
       case AppLifecycleState.resumed:
         curPage = 1;
         getTemplateList(false);
@@ -107,14 +108,18 @@ class TemplatePageState extends State<TemplatePage>
 
   void getTemplateList(bool loadMore) {
     if (loadMore) {
+      print("加载更多");
       setState(() {});
     } else {
       DatabaseHelper.internal().getTemplates().then((values) {
+        print("values:$values");
         setState(() {
           listData.clear();
           dbSize = 0;
           for (var value in values) {
-            listData.add(Template(value["template"]));
+            var template = Template(value["template"]);
+            template.id = value["id"];
+            listData.add(template);
             dbSize++;
           }
         });
@@ -134,7 +139,7 @@ class TemplatePageState extends State<TemplatePage>
         textTheme: ButtonTextTheme.accent,
         padding: EdgeInsets.symmetric(vertical: 9.0),
         onPressed: () {
-          _sendMsg();
+          showOptions(i);
         },
         child: Text(
           text,
@@ -142,10 +147,47 @@ class TemplatePageState extends State<TemplatePage>
       );
     }
   }
+
+  Future<Null> showOptions(int i) async {
+    switch (await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  _sendMsg(listData[i].template);
+                },
+                child: const Text('发送'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {},
+                child: const Text('编辑'),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  print("删除${listData[i].id}");
+                  DatabaseHelper.internal()
+                      .deleteTemplate(listData[i].id)
+                      .then((value) {
+                    print("删除$value行");
+                    getTemplateList(false);
+                    Navigator.of(context).pop();
+                  });
+                },
+                child: const Text("删除"),
+              )
+            ],
+          );
+        })) {
+    }
+  }
 }
 
-void _sendMsg() async {
-  const url = "sms:15173209115;15616665287";
+void _sendMsg(String text) async {
+  String proccessedText = text.replaceAll("[", "");
+  proccessedText = proccessedText.replaceAll("]", "");
+  String url = "sms:15173209115;15616665287?body=$proccessedText";
   if (await canLaunch(url)) {
     await launch(url);
   } else {

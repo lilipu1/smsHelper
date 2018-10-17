@@ -50,6 +50,12 @@ class DatabaseHelper {
     return res;
   }
 
+  Future<int> deleteTemplate(int id) async {
+    var dbClient = await db;
+    var res = await dbClient.rawDelete("delete from template where id = ?",[id]);
+    return res;
+  }
+
   Future<int> saveField(Field field) async {
     var dbClient = await db;
     int res = await dbClient.insert("field", field.toMap());

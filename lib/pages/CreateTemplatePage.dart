@@ -17,13 +17,19 @@ class CreateTemplatePage extends StatefulWidget {
 }
 
 class CreateTemplatePageState extends State<CreateTemplatePage> {
-
   //String templateStr = "";
   final String title;
   final focusNode = FocusNode();
   final controller = TextEditingController();
+  final items = List<PopupMenuItem<String>>();
 
   CreateTemplatePageState(this.title) {}
+
+  @override
+  void initState() {
+    super.initState();
+    getFields();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +41,7 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
         ),
         centerTitle: true,
         title: Text(title),
-        actions: <Widget>[
-          PopupMenuButton<String>(
-            onSelected: (String value) {
-              controller.text = controller.text + "[$value]";
-            },
-            itemBuilder: (context) => buildItem(context),
-          )
-        ],
+        actions: createAction(),
         elevation: 0.0,
       ),
       body: Column(
@@ -58,7 +57,8 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
                 focusNode: focusNode,
                 controller: controller,
                 decoration: null,
-                style: TextStyle(fontSize: 18.0,color: Color.fromARGB(255, 0, 0, 0)),
+                style: TextStyle(
+                    fontSize: 18.0, color: Color.fromARGB(255, 0, 0, 0)),
               ),
             ),
           ),
@@ -98,15 +98,37 @@ class CreateTemplatePageState extends State<CreateTemplatePage> {
   }
 
   buildItem(BuildContext context) {
-    return [
-      PopupMenuItem<String>(
-        value: "选项一",
-        child: Text("选项一"),
-      ),
-      PopupMenuItem<String>(
-        value: "选项二",
-        child: Text("选项二"),
-      )
-    ];
+    return items;
+  }
+
+  createAction() {
+    List<Widget> actions = List();
+    switch (title) {
+      case Constants.createTemplate:
+        actions.add(PopupMenuButton<String>(
+          itemBuilder: (context) => buildItem(context),
+          onSelected: (text) {
+            controller.text = controller.text + "[$text]";
+          },
+        ));
+        break;
+    }
+    return actions;
+  }
+
+  void getFields() {
+    DatabaseHelper.internal().getFields().then((values) {
+      List<String> fields = [];
+      for (var value in values) {
+        fields.add(value["field"]);
+      }
+      print("items:$fields");
+      items.addAll(fields.map((String item) {
+        return PopupMenuItem<String>(
+          value: item,
+          child: Text(item),
+        );
+      }).toList());
+    });
   }
 }

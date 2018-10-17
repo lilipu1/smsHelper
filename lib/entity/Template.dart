@@ -17,5 +17,4 @@ class Template {
     return map;
   }
 
-
 }
